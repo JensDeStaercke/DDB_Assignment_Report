@@ -1,0 +1,24 @@
+# Fdb version 3
+["xdvipdfmx"] 1635771238 "Assignment_DDB.xdv" "Assignment_DDB.pdf" "Assignment_DDB" 1635771239
+  "Assignment_DDB.xdv" 1635771238 2780 e236522fca4969daa92fc475f2aa9f2b "xelatex"
+  (generated)
+  "Assignment_DDB.pdf"
+["xelatex"] 1635771236 "Assignment_DDB.tex" "Assignment_DDB.xdv" "Assignment_DDB" 1635771239
+  "Assignment_DDB.aux" 1635771238 32 3985256e7290058c681f74d7a3565a19 "xelatex"
+  "Assignment_DDB.tex" 1635771234 410 1e59879ebe6f98c61ff997d172631c45 ""
+  "C:/Program Files/MiKTeX/fonts/tfm/public/cm/cmmi12.tfm" 1136765053 1524 4414a8315f39513458b80dfc63bff03a ""
+  "C:/Program Files/MiKTeX/fonts/tfm/public/cm/cmr12.tfm" 1136765053 1288 655e228510b4c2a1abe905c368440826 ""
+  "C:/Program Files/MiKTeX/fonts/tfm/public/cm/cmsy10.tfm" 1136765053 1124 6c73e740cf17375f03eec0ee63599741 ""
+  "C:/Program Files/MiKTeX/tex/latex/base/report.cls" 1623738100 23203 64203114d4d79d222d1fe0e891453fd4 ""
+  "C:/Program Files/MiKTeX/tex/latex/base/size12.clo" 1623738100 8449 6d2bb4e793199f4e5ccb1cfc6d242d27 ""
+  "C:/Program Files/MiKTeX/tex/latex/base/ts1cmr.fd" 1623738100 2430 06a89bcded389391906798ea7a3f3aaa ""
+  "C:/Program Files/MiKTeX/tex/latex/l3backend/l3backend-xetex.def" 1626114380 34822 2b2b3b68dd03fa687bc6f9eed6efb700 ""
+  "C:/Program Files/MiKTeX/tex/latex/l3kernel/expl3.sty" 1626114980 6208 c02f13745d229011c75f7cbc1ada36ea ""
+  "C:/Program Files/MiKTeX/tex/latex/l3packages/l3keys2e/l3keys2e.sty" 1623999600 4614 6bd4ec110671bbc5dde7d4a05eafa99e ""
+  "C:/Users/jensd/AppData/Local/MiKTeX/miktex/data/le/xetex/xelatex.fmt" 1627397326 23094108 283872e1558005b00c5c82ce78613a23 ""
+  "C:/Users/jensd/AppData/Roaming/MiKTeX/tex/latex/lipsum/lipsum.ltd.tex" 1627115399 95525 6fd0552101a6b1f9b7a84b402ec435ba ""
+  "C:/Users/jensd/AppData/Roaming/MiKTeX/tex/latex/lipsum/lipsum.sty" 1627115399 13324 9087374bad462b38084a091c3d08740a ""
+  (generated)
+  "Assignment_DDB.xdv"
+  "Assignment_DDB.log"
+  "Assignment_DDB.aux"
