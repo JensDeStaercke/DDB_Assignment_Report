@@ -1208,6 +1208,9 @@ INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\cmextra\cmex7.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam5.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm5.tfm
 INPUT C:\Users\arnot\AppData\Local\MiKTeX\fonts\tfm\public\rsfs\rsfs5.tfm
+INPUT .\img\pizzas.png
+INPUT .\img\pizzas.png
+INPUT img\pizzas.png
 INPUT Assignment_DDB.aux
 INPUT .\Assignment_DDB.out
 INPUT .\Assignment_DDB.out

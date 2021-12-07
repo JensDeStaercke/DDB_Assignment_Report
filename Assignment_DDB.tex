@@ -457,7 +457,7 @@ BIRADS Age Shape Margin Density  Severity
 
 \section{Determining a model with auto-sklearn}
 
-First we'll seperate the features(X) from the output data(y).
+First we'll seperate the features(X) from the labels(y).
 
 \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
 	\prompt{In}{incolor}{ }{\boxspacing}
@@ -579,17 +579,174 @@ Do you get better models if you increase the “time” budget?
 What type of model is the winning model? What types of models does auto-sklearn use?
 Compare the required effort and required domain knowledge between the winning models and the models created by auto-sklearn.
 
-\section{Binary classification}
-\label{sec:binary-classification}
-Random acts of pizza
 
-\section{Multiclass classification}
+!!! Kaderen dat we bij elke competition maar met 1 nieuwe variabele ``experimeteren'' brothers wright
+
+We experimented with auto-sklearn by OFAT
+
+\clearpage
+
+\section{Random Acts of Pizza}
+\label{sec:binary-classification}
+
+For our first competition, we looked for a binary classification problem. We found ``Random Acts of Pizza - Predicting altruism through free pizza''. ``Random Acts of Pizza'' is a community on the social network ``Reddit'', in which users can post a [REQUEST] for free pizza. At that point, other users are free to send this person the gift. If a good samaritan did decide to send pizza, the original user wil post a [THANKS] message.
+
+\begin{figure}
+	\includegraphics[width=\textwidth]{img/pizzas.png}
+\end{figure}
+
+Our job was to predict whether or not a users received free pizza, based on the information surrounding the [REQUEST] post.
+
+\subsection{Importing the data}
+Importing the data is analogous for every Kaggle competition. Just run the command specified under the ``Data'' tab of the competition. This will download the dataset using the Kaggle API:
+
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{o}{!}kaggle competitions download \PYZhy{}c random\PYZhy{}acts\PYZhy{}of\PYZhy{}pizza
+\end{Verbatim}
+\end{tcolorbox}
+
+For this competition we simply had to unzip these files and out came a .json file for the training and the test set. After that, the data can be brought into a pandas DataFrame:
+
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df\PYZus{}train} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}json}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{/content/train.json}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+\subsection{Data preparation}
+We quickly realised that the test set contained less features than the training set. This is because the training set contained data about the reddit posts on retrieval (of pizza). It is self evident that this data is not specified in the test set, since this is exactly what we have to predict. 
+In general, we had to get rid of all the columns that were only present in the training set. Namely, there is no use for a model with 31 features, if the test set can only supply us with 17.
+
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Remove data regarding retrieval}
+\PY{n}{retrieval\PYZus{}cols} \PY{o}{=} \PY{n}{df\PYZus{}train}\PY{o}{.}\PY{n}{filter}\PY{p}{(}\PY{n}{regex}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{.*\PYZus{}at\PYZus{}retrieval}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{df\PYZus{}train} \PY{o}{=} \PY{n}{df\PYZus{}train}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{n}{retrieval\PYZus{}cols}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Remove the edit unaware request text}
+\PY{n}{df\PYZus{}train} \PY{o}{=} {df\PYZus{}train}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{request\PYZus{}text}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Remove other uncommon columns}
+\PY{n}{df\PYZus{}train} \PY{o}{=} {df\PYZus{}train}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{post\PYZus{}was\PYZus{}edited}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{requester\PYZus{}user\PYZus{}flair}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+Both data sets came with two timestamps. We picked the UTC variant, as we don't need both of them in the model. An additional timestamp wouldn't be a useful feature, because it doesn't bring any new information.
+
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Remove redundant timestamp}
+\PY{n}{df\PYZus{}train} \PY{o}{=} {df\PYZus{}train}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{unix\PYZus{}timestamp\PYZus{}of\PYZus{}request}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{df\PYZus{}train} \PY{o}{=} {df\PYZus{}test}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{unix\PYZus{}timestamp\PYZus{}of\PYZus{}request}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+In order to fit the model to them, the labels requester\_received\_pizza had to be cast to a numeric type.
+
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df\PYZus{}train}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{requester\PYZus{}received\PYZus{}pizza}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{df\PYZus{}train}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{requester\PYZus{}received\PYZus{}pizza}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{int}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+\subsection{Feature selection}
+
+Username of niet => vertrouwen van mensen
+
+Subreddits meer vertrouwen?
+
+
+
+\subsection{Binary classification with auto-sklearn}
+Contrary to the exericises that we made in the course, the data was already split up into a training and a test set. This is, of course, because the actual output values for the test set have to be inaccessible.
+However, we did have to split up the training set into a (smaller) training and a validation set. Otherwise, there'd be no way for us to check the generated models before we submit our predictions for the test set.
+
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{X\PYZus{}val}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}val} \PY{o}{=} \PY{n}{train\PYZus{}test\PYZus{}split}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{,} \PY{n}{test\PYZus{}size}\PY{o}{=}\PY{l+m+mf}{0.3}\PY{p}{,} \PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{42}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+Because this is a binary classificaton problem (pizza requesters should be classed on wether or not ther received pizza) we can use the AutoSklearnClassifier:
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{autosklearn}\PY{n+nn}{.}\PY{n+nn}{classification}
+
+\PY{n}{model} \PY{o}{=} \PY{n}{autosklearn}\PY{o}{.}\PY{n}{classification}\PY{o}{.}\PY{n}{AutoSklearnClassifier}\PY{p}{(}
+\PY{n}{per\PYZus{}run\PYZus{}time\PYZus{}limit}\PY{o}{=}\PY{l+m+mi}{30}\PY{p}{,}
+\PY{n}{time\PYZus{}left\PYZus{}for\PYZus{}this\PYZus{}task}\PY{o}{=}\PY{l+m+mi}{120}\PY{p}{,}
+\PY{p}{)}
+\PY{n}{model}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+\subsection{Making predictions}
+
+First we used the model on the validation set:
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{y\PYZus{}val\PYZus{}pred} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}val}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+Accuracy of roughly 83\%.
+
+We decided to make the predictions with the actual test data. After submitting we received a score of 64\%.
+
+To investigate this drop in succesfulness we made the confusion matrix. The predictions had a high true negative rate (99\%), but a fairly low true positive rate (38\%). In other words, our model is very good at saying ``no''. It is, in fact, a bit ``too good'' at saying ``no''. This explains the score of 64\%, which is based on the Receiver Operating Curve (created by plotting the TPR against the FPR).
+
+
+
+This score placed us in the top 35\% on the leaderboard. We were pleasantly surprised by this, given that this was our first attempt at a Kaggle course.
+
+
+
+
+\subsection{Comparison with the winning model}
+
+\subsection{Experimentation}
+Volledige trainingset nemen wanneer goede features
+
+
+\clearpage
+
+\section{Forest Cover Type Prediction}
 \label{sec:multiclass-classification}
 Forest cover type prediction\\
 Abstract classification
 
-\section{Regression}
+\subsection{Importing and cleaning the data}
+
+\subsection{Multiclass classification with auto-sklearn}
+
+\subsection{Making predictions}
+
+\subsection{Experimentation}
+fiddle arround with parameters
+
+
+\clearpage
+
+\section{House Prices}
 \label{sec:regression}
 House prices
+
+\subsection{Importing and cleaning the data}
+
+\subsection{Regression with auto-sklearn}
+
+\subsection{Making predictions}
+
+\subsection{Experimentation}
+more or less features => binarizer/onehotencoder
 
 \end{document}
