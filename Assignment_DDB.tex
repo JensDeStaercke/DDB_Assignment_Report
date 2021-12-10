@@ -389,19 +389,19 @@
 \maketitle
 
 \begin{abstract}
-This is our report of the assignment for the course ``Distributed Databases''. In the following chapters we will describe how we applied the automated machine learning toolkit auto-sklearn to multiple machine learning problems.
+This is our report of the assignment for the course ``Distributed Databases''. In the following chapters we will describe how we applied the automated machine learning toolkit  \verb|auto-sklearn|  to multiple machine learning problems.
 \end{abstract}
 
 \tableofcontents
 
 \chapter{Excercise Mammography}
-As an introduction to the auto-sklearn toolkit we applied it to one of the exercises given in our course. 
+As an introduction to the  \verb|auto-sklearn|  toolkit we applied it to one of the exercises given in our course. 
 
 In the exercise Mammography we originally predicted the severity (benign/malign) of mammography results, with the use of a RandomForestClassifier. This time, however, we will be using the AutoSklearnClassifier and find out if we can get any useful predictions.
 
 \section{Setting up the environment}
 As recommended, we created a Google Colab notebook.
-The installation of auto-sklearn can be done with the following command:
+The installation of  \verb|auto-sklearn|  can be done with the following command:
 
 \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
 \prompt{In}{incolor}{ }{\boxspacing}
@@ -508,7 +508,7 @@ Number of test examples: 246
 \end{Verbatim}
 
 
-Now we can build the model with the use of auto-sklearn. Since this is a binary classification problem (the BI-RADS data should be classified as either benign or malignant), we can make use of the AutoSklearnClassifier:
+Now we can build the model with the use of  \verb|auto-sklearn| . Since this is a binary classification problem (the BI-RADS data should be classified as either benign or malignant), we can make use of the AutoSklearnClassifier:
 \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
 \prompt{In}{incolor}{ }{\boxspacing}
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -526,8 +526,8 @@ Now we can build the model with the use of auto-sklearn. Since this is a binary 
 
 It's very important to specify the following parameters:
 \begin{itemize}
-	\item \textbf{time\_left\_for\_this\_task:} time (seconds) in which auto-sklearn can search for the appropriate models.
-	\item \textbf{per\_run\_time\_limit:} time (seconds) auto-sklearn gets for fitting the model on the training data.
+	\item \textbf{time\_left\_for\_this\_task:} time (seconds) in which  \verb|auto-sklearn|  can search for the appropriate models.
+	\item \textbf{per\_run\_time\_limit:} time (seconds)  \verb|auto-sklearn|  gets for fitting the model on the training data.
 \end{itemize}
 Part of our job during this assesment, was to fiddle arround with these parameters, in order to get better and better models/predictions:
 Ascribe large values and you increase the odds of finding a model better fitted to the (training) data. But it will take a long time to get to this model (with the risk of overfitting). 
@@ -573,16 +573,16 @@ Our model would have correctly diagnosed about 80\% of the instances in the test
 
 \chapter{Kaggle competitions}
 For this part of the assignment, we chose 
-Investigate the models created by auto-sklearn and compare them with the winning models of the Kaggle competitions.
+Investigate the models created by  \verb|auto-sklearn|  and compare them with the winning models of the Kaggle competitions.
 Did you get a comparable performance?
 Do you get better models if you increase the “time” budget?
-What type of model is the winning model? What types of models does auto-sklearn use?
-Compare the required effort and required domain knowledge between the winning models and the models created by auto-sklearn.
+What type of model is the winning model? What types of models does  \verb|auto-sklearn|  use?
+Compare the required effort and required domain knowledge between the winning models and the models created by  \verb|auto-sklearn| .
 
 
 !!! Kaderen dat we bij elke competition maar met 1 nieuwe variabele ``experimeteren'' brothers wright
 
-We experimented with auto-sklearn by OFAT
+We experimented with  \verb|auto-sklearn|  by OFAT
 
 \clearpage
 
@@ -597,7 +597,7 @@ For our first competition, we looked for a binary classification problem. We fou
 
 Our job was to predict whether or not a users received free pizza, based on the information surrounding the [REQUEST] post.
 
-\subsection{Importing the data}
+\subsection{Importing the Data}
 Importing the data is analogous for every Kaggle competition. Just run the command specified under the ``Data'' tab of the competition. This will download the dataset using the Kaggle API:
 
 \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
@@ -655,13 +655,34 @@ In order to fit the model to them, the labels requester\_received\_pizza had to 
 \end{Verbatim}
 \end{tcolorbox}
 
-\subsection{Feature selection}
+\subsection{Feature Selection}
+Now the data was prepared, we could decide on which columns were to be used as features. These are some of the most notable decisions made in this step:
 
-Username of niet => vertrouwen van mensen
+\begin{itemize}
+	\item Self evidently, column \PY{l+s+s1}{requester\PYZus{}subreddits} (list of subreddits) couldn't directly be used as a feature. Instead, we used it to make out whether or not the requester is a member of the ``Random Acts of Pizza'' subreddit using the function \PY{n+nf}{reduce\PYZus{}subreddits\PYZus{}to\PYZus{}membership}\PY{p}{(}\PY{n}{df}\PY{p}{)}.
+ 	\item We noticed something odd about the datasets. Both the training and the test set contained a column \PY{l+s+s1}{giver\PYZus{}username\PYZus{}if\PYZus{}known}. This is strange, considering that the fact if a pizza was given or not, is exactly what has to be predicted. For a moment, we thought we caught a leakage feature  But a quick look at the data revealed that most of the values were "N/A". We could, however, still use the ``missingness'' of this variable as a feature. A post with a known giver, will certainly have received a pizza. We did transformed it to a int column with 0 or 1 values to signify if a giver was mentioned.
+\end{itemize}
 
-Subreddits meer vertrouwen?
+Eventually, our first model was built using the following features:
+\begin{Verbatim}[commandchars=\\\{\}]
+Data columns (total 14 columns):
+\#   Column                                  Non-Null Count  Dtype
+---  ------                                  --------------  -----
+0   giver_username_if_known                  4040 non-null   int64  
+1   requester_account_age_in_days            4040 non-null   float64
+2   requester_days_since_first_post_on_raop  4040 non-null   float64
+3   requester_number_of_comments             4040 non-null   int64  
+4   requester_number_of_comments_in_raop     4040 non-null   int64  
+5   requester_number_of_posts                4040 non-null   int64  
+6   requester_number_of_posts_on_raop        4040 non-null   int64  
+7   requester_number_of_subreddits           4040 non-null   int64  
+8   requester_upvotes_minus_downvotes        4040 non-null   int64  
+9   requester_upvotes_plus_downvotes         4040 non-null   int64  
+10  unix_timestamp_of_request_utc            4040 non-null   int64  
+11  requester_member_of_raop                 4040 non-null   int64  
+\end{Verbatim}
 
-
+At the end the end of this exercise we did some further experimentation with the features.
 
 \subsection{Binary classification with auto-sklearn}
 Contrary to the exericises that we made in the course, the data was already split up into a training and a test set. This is, of course, because the actual output values for the test set have to be inaccessible.
@@ -681,14 +702,16 @@ Because this is a binary classificaton problem (pizza requesters should be class
 \PY{k+kn}{import} \PY{n+nn}{autosklearn}\PY{n+nn}{.}\PY{n+nn}{classification}
 
 \PY{n}{model} \PY{o}{=} \PY{n}{autosklearn}\PY{o}{.}\PY{n}{classification}\PY{o}{.}\PY{n}{AutoSklearnClassifier}\PY{p}{(}
-\PY{n}{per\PYZus{}run\PYZus{}time\PYZus{}limit}\PY{o}{=}\PY{l+m+mi}{30}\PY{p}{,}
-\PY{n}{time\PYZus{}left\PYZus{}for\PYZus{}this\PYZus{}task}\PY{o}{=}\PY{l+m+mi}{120}\PY{p}{,}
+	\PY{n}{per\PYZus{}run\PYZus{}time\PYZus{}limit}\PY{o}{=}\PY{l+m+mi}{30}\PY{p}{,}
+	\PY{n}{time\PYZus{}left\PYZus{}for\PYZus{}this\PYZus{}task}\PY{o}{=}\PY{l+m+mi}{120}\PY{p}{,}
 \PY{p}{)}
 \PY{n}{model}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{)}
 \end{Verbatim}
 \end{tcolorbox}
 
-\subsection{Making predictions}
+To model was automatically made and fit to the training set labels.
+
+\subsection{Making Predictions}
 
 First we used the model on the validation set:
 \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
@@ -698,23 +721,58 @@ First we used the model on the validation set:
 \end{Verbatim}
 \end{tcolorbox}
 
-Accuracy of roughly 83\%.
+It made predictions with an accuracy of roughly 83\%.
 
-We decided to make the predictions with the actual test data. After submitting we received a score of 64\%.
-
-To investigate this drop in succesfulness we made the confusion matrix. The predictions had a high true negative rate (99\%), but a fairly low true positive rate (38\%). In other words, our model is very good at saying ``no''. It is, in fact, a bit ``too good'' at saying ``no''. This explains the score of 64\%, which is based on the Receiver Operating Curve (created by plotting the TPR against the FPR).
+We decided to make the predictions with the test data. After submitting we received a score of 64\%.
 
 
+At first, this seemed like a serious drop in accuracy to us. To investigate this we made the confusion matrix of the validation predictions. They showed a high true negative rate (99\%), but a fairly low true positive rate (38\%). In other words, our model is very good at saying ``no''. It is, in fact, a bit ``too good'' at saying ``no''. This explains the score of 64\% which is based on the Receiver Operating Curve (created by plotting the TPR against the FPR). It's not the same as an accuracy of 64\%.
 
 This score placed us in the top 35\% on the leaderboard. We were pleasantly surprised by this, given that this was our first attempt at a Kaggle course.
 
+It's worth noting that auto-sklearn was able to figure out that all posts with a \PY{l+s+s1}{giver\PYZus{}username\PYZus{}if\PYZus{}known} equal to 1 should receive a positive label (received pizza).
+
+\subsection{Comparison with the Winning Model}
+
+\subsection{Further Experimentation}
+In this first Kaggle competition, we decided to experiment with the features to find out if  \verb|auto-sklearn|  would return a better model. We tried including/excluding different features.
 
 
 
-\subsection{Comparison with the winning model}
 
-\subsection{Experimentation}
-Volledige trainingset nemen wanneer goede features
+
+
+\begin{itemize}
+	\item Consider features \PY{l+s+s1}{requester\PYZus{}upvotes\PYZus{}plus\PYZus{}downvotes}\PY{l+s+s1}{\PYZsq{}} and \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{requester\PYZus{}upvotes\PYZus{}minus\PYZus{}downvotes}: We wondered if it would make a difference to our model if we seperated the upvotes and downvotes into their own seperate features. Namely, in the current model, there is no way of ``adding weight'' to the upvotes, without also doing this to the downvotes and vice versa. We wrote function \PY{n+nf}{calculate\PYZus{}upvotes\PYZus{}and\PYZus{}downvotes}\PY{p}{(}\PY{n}{df}\PY{p}{)} for making this seperation. Unfortunately, this made a negligible improvent to our final score.
+	
+	\item Posts in the RAOP subreddit are indicated as a request by placing ``[REQUEST]'' in the title.  We created a feature to distinguish valid requests from other posts using this function: \PY{n+nf}{map\PYZus{}title\PYZus{}to\PYZus{}validity}\PY{p}{(}\PY{n}{df}\PY{p}{)}. Again, this made very little improvement to the final predictions.
+	
+	\item The next feature demanded a bit of domain knowledge: the rules of RAOP state that a reddit account should be at least 90 days old to qualify for making a valid request. Some users try with an account that's younger, but they're not very succesful. We made and additional feature, signifying if an account is old enough to qualify for pizza. Again, the experiment didn't pay off.
+\end{itemize}
+
+One could argue that \verb|auto-sklearn| is pretty succesful at determining the underlying importances of features for given data. This could be the reason that our manual attempts at creating additional features were insignificant.
+
+This is a list of the features that made it in the final model:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+Data columns (total 14 columns):
+\#   Column                                   Non-Null Count  Dtype
+---  ------                                   --------------  -----
+0   giver\_username\_if\_known                  4040 non-null   int64
+1   requester\_account\_age\_in\_days            4040 non-null   float64
+2   requester\_days\_since\_first\_post\_on\_raop  4040 non-null   float64
+3   requester\_number\_of\_comments             4040 non-null   int64
+4   requester\_number\_of\_comments\_in\_raop     4040 non-null   int64
+5   requester\_number\_of\_posts                4040 non-null   int64
+6   requester\_number\_of\_posts\_on\_raop        4040 non-null   int64
+7   requester\_number\_of\_subreddits           4040 non-null   int64
+8   unix\_timestamp\_of\_request\_utc            4040 non-null   int64
+9   requester\_member\_of\_raop                 4040 non-null   int64
+10  requester\_upvotes                        4040 non-null   int64
+11  requester\_downvotes                      4040 non-null   int64
+12  valid\_request\_title                      4040 non-null   int64
+13  requester\_account\_old\_enough             4040 non-null   int64
+\end{Verbatim}
 
 
 \clearpage
@@ -730,7 +788,7 @@ Abstract classification
 
 \subsection{Making predictions}
 
-\subsection{Experimentation}
+\subsection{Further Experimentation}
 fiddle arround with parameters
 
 
