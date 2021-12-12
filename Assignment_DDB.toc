@@ -9,16 +9,14 @@
 \contentsline {subsection}{\numberline {2.1.3}Feature Selection}{9}{subsection.2.1.3}%
 \contentsline {subsection}{\numberline {2.1.4}Binary classification with auto-sklearn}{10}{subsection.2.1.4}%
 \contentsline {subsection}{\numberline {2.1.5}Making Predictions}{10}{subsection.2.1.5}%
-\contentsline {subsection}{\numberline {2.1.6}Comparison with the Winning Model}{11}{subsection.2.1.6}%
-\contentsline {subsection}{\numberline {2.1.7}Further Experimentation}{11}{subsection.2.1.7}%
-\contentsline {section}{\numberline {2.2}Forest Cover Type Prediction}{13}{section.2.2}%
-\contentsline {subsection}{\numberline {2.2.1}Importing and cleaning the data}{13}{subsection.2.2.1}%
-\contentsline {subsection}{\numberline {2.2.2}Multiclass classification with auto-sklearn}{13}{subsection.2.2.2}%
-\contentsline {subsection}{\numberline {2.2.3}Making predictions}{13}{subsection.2.2.3}%
-\contentsline {subsection}{\numberline {2.2.4}Further Experimentation}{13}{subsection.2.2.4}%
-\contentsline {section}{\numberline {2.3}House Prices}{14}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}Data Preparation}{14}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.1.6}Further Experimentation}{11}{subsection.2.1.6}%
+\contentsline {section}{\numberline {2.2}Forest Cover Type Prediction}{12}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Importing and cleaning the data}{12}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Multiclass classification with auto-sklearn}{12}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Making predictions}{12}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.4}Further Experimentation}{12}{subsection.2.2.4}%
+\contentsline {section}{\numberline {2.3}House Prices}{13}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Data Preparation}{13}{subsection.2.3.1}%
 \contentsline {subsection}{\numberline {2.3.2}Feature Selection}{16}{subsection.2.3.2}%
-\contentsline {subsection}{\numberline {2.3.3}Regression with auto-sklearn}{16}{subsection.2.3.3}%
-\contentsline {subsection}{\numberline {2.3.4}Making predictions}{16}{subsection.2.3.4}%
-\contentsline {subsection}{\numberline {2.3.5}Experimentation}{16}{subsection.2.3.5}%
+\contentsline {subsection}{\numberline {2.3.3}Regression with auto-sklearn}{17}{subsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.3.4}Making predictions}{17}{subsection.2.3.4}%

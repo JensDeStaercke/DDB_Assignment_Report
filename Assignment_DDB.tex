@@ -587,8 +587,6 @@ We experimented with  \verb|auto-sklearn|  by OFAT
 \clearpage
 
 \section{Random Acts of Pizza}
-\label{sec:binary-classification}
-
 For our first competition, we looked for a binary classification problem. We found ``Random Acts of Pizza - Predicting altruism through free pizza''. ``Random Acts of Pizza'' is a community on the social network ``Reddit'', in which users can post a [REQUEST] for free pizza. At that point, other users are free to send this person the gift. If a good samaritan did decide to send pizza, the original user wil post a [THANKS] message.
 
 \begin{figure}
@@ -732,7 +730,6 @@ This score placed us in the top 35\% on the leaderboard. We were pleasantly surp
 
 It's worth noting that auto-sklearn was able to figure out that all posts with a \PY{l+s+s1}{giver\PYZus{}username\PYZus{}if\PYZus{}known} equal to 1 should receive a positive label (received pizza).
 
-\subsection{Comparison with the Winning Model}
 
 \subsection{Further Experimentation}
 In this first Kaggle competition, we decided to experiment with the features to find out if  \verb|auto-sklearn|  would return a better model. We tried including/excluding different features.
@@ -743,7 +740,7 @@ In this first Kaggle competition, we decided to experiment with the features to 
 
 
 \begin{itemize}
-	\item Consider features \PY{l+s+s1}{requester\PYZus{}upvotes\PYZus{}plus\PYZus{}downvotes}\PY{l+s+s1}{\PYZsq{}} and \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{requester\PYZus{}upvotes\PYZus{}minus\PYZus{}downvotes}: We wondered if it would make a difference to our model if we seperated the upvotes and downvotes into their own seperate features. Namely, in the current model, there is no way of ``adding weight'' to the upvotes, without also doing this to the downvotes and vice versa. We wrote function \PY{n+nf}{calculate\PYZus{}upvotes\PYZus{}and\PYZus{}downvotes}\PY{p}{(}\PY{n}{df}\PY{p}{)} for making this seperation. Unfortunately, this made a negligible improvent to our final score.
+	\item Consider features \PY{l+s+s1}{requester\PYZus{}upvotes\PYZus{}plus\PYZus{}downvotes} and \PY{l+s+s1}{requester\PYZus{}upvotes\PYZus{}minus\PYZus{}downvotes}: We wondered if it would make a difference to our model if we seperated the upvotes and downvotes into their own seperate features. Namely, in the current model, there is no way of ``adding weight'' to the upvotes, without also doing this to the downvotes and vice versa. We wrote function \PY{n+nf}{calculate\PYZus{}upvotes\PYZus{}and\PYZus{}downvotes}\PY{p}{(}\PY{n}{df}\PY{p}{)} for making this seperation. Unfortunately, this made a negligible improvent to our final score.
 	
 	\item Posts in the RAOP subreddit are indicated as a request by placing ``[REQUEST]'' in the title.  We created a feature to distinguish valid requests from other posts using this function: \PY{n+nf}{map\PYZus{}title\PYZus{}to\PYZus{}validity}\PY{p}{(}\PY{n}{df}\PY{p}{)}. Again, this made very little improvement to the final predictions.
 	
@@ -833,13 +830,12 @@ Printing out the dataframe info of the training data revealed some columns with 
 74  MiscFeature    54 non-null     object   x
 \end{Verbatim}
 
-
+\clearpage
 The test data was worse off:
 \begin{Verbatim}[commandchars=\\\{\}]
 #   Column         Non-Null Count  Dtype   OK  Fill with
 ---  ------         --------------  -----  --  ---------
 2   MSZoning       1455 non-null   object      most frequent
-
 3   LotFrontage    1232 non-null   float64     mean
 
 6   Alley          107 non-null    object   x
@@ -882,52 +878,133 @@ The test data was worse off:
 72  PoolQC         3 non-null      object   x
 
 73  Fence          290 non-null    object   x
-
 74  MiscFeature    51 non-null     object   x
 \end{Verbatim}
 
-By investigating the data description and values, we could deduce that only the columns MasVnrType, MasVnrArea and Electrical actually lack data. For all the other columns the NA values actually indicate that the house does not have the item at hand (be it alley, fireplace, pool, etc.). In other words: it's not the data that's lacking, it's the house that lacks the item, and this is indicated with a 'NA'.
+By investigating the data description and values, we could deduce that not all of the columns actually lack data. For columns like \PY{l+s+s1}{Alley}, \PY{l+s+s1}{FireplaceQu}, ... the  \verb|NA|  values actually indicate that the house does not have the item at hand (be it alley, fireplace, pool, etc.). In other words: it's not the data that's lacking, it's the house that lacks the item, and this is indicated with a  \verb|NA| .
 
 This distinction led to the following approaches for filling up the missing data:
 
 \begin{itemize}
-	\item The NAs in columns indicated with an 'x' are not missing data. During the encoding step, they will be encoded into a ``0''. There were some exceptions to this:
+	\item The  \verb|NA|s in columns indicated with an 'x' are not missing data. During the encoding step, they will be encoded into a ``0''. There were some exceptions to this:
 	\begin{description}
-		\item[Basements:] Eventhough an NA in the BsmtCond normally indicates a house with no finished basement, one house does have a basement (BsmtCond) despite it. This value was actually missing.  We filled this with the most frequent BsmtCond. (Two houses also had an unfinished basement, accounting for 2 additional NAs in BsmtQual.)
-		\item[Garages:] One house had NA . Two garages miss a GarageYrBlt and GarageFinish.  One of these also lacks values for GarageCars and GarageArea. All of these were filled with the mean.
+		\item[Basements:] Eventhough an  \verb|NA|  in the \PY{l+s+s1}{BsmtCond} normally indicates a house with no finished basement, one house does have a basement (\PY{l+s+s1}{BsmtQual}) despite it. This value was actually missing.  We filled this with the most frequent \PY{l+s+s1}{BsmtCond}. (Two houses also had an unfinished basement, accounting for 2 additional  \verb|NA| s in \PY{l+s+s1}{BsmtQual}.)
+		\item[Garages:] Two garages miss a \PY{l+s+s1}{GarageYrBlt} and GarageFinish, eventhough they have a \PY{l+s+s1}{GarageType}.  One of these also lacks values for \PY{l+s+s1}{GarageCars} and \PY{l+s+s1}{GarageArea}. All of these were filled with the mean.
 \end{description}	
 	
 	\item Actual missing data will be filled with either the mean (in case of a numeric column) or the most frequent value (in case of categorical column) of that column. Exceptions were:
 	\begin{description}
-		\item[Basements]: BsmtSF columns should normally never have NA values. From the BsmtQual column, we could deduce that this house didn't have a basement. Therefore, we filled with 0 instead of the mean.
+		\item[Basements]: \PY{l+s+s1}{BsmtSF} columns should normally never have  \verb|NA|  values. From the BsmtQual column, we could deduce that this house didn't have a basement. Therefore, in this case 0 was a better fit than the mean.
 	\end{description}	
 
-	\item MiscFeature could be dropped completely. Namely, column MiscValue gives us all the information we need, without NAs.
+	\item \PY{l+s+s1}{MiscFeature} could be dropped completely. Namely, column \PY{l+s+s1}{MiscValue} gives us all the information we need, without  \verb|NA|s.
 \end{itemize}
+ 
 
-Other decisions:
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{fill\PYZus{}mean\PYZus{}cols} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LotFrontage}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+		  \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{MasVnrArea}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+		  \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{GarageCars}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+		  \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{GarageArea}\PY{l+s+s1}{\PYZsq{}}
+		 \PY{p}{]}
+	
+\PY{k}{for} \PY{n}{col\PYZus{}name} \PY{o+ow}{in} \PY{n}{fill\PYZus{}mean\PYZus{}cols}\PY{p}{:}
+	\PY{n}{df\PYZus{}train}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{p}{]} \PY{o}{=} \PY{n}{df\PYZus{}train}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{p}{]}\PY{o}{.}\PY{n}{fillna}\PY{p}{(}\PY{n}{df\PYZus{}train}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+	\PY{n}{df\PYZus{}test}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{p}{]} \PY{o}{=} \PY{n}{df\PYZus{}test}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{p}{]}\PY{o}{.}\PY{n}{fillna}\PY{p}{(}\PY{n}{df\PYZus{}test}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
 
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{fill\PYZus{}mf\PYZus{}cols} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{MasVnrType}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+		\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Electrical}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+		\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{MSZoning}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+		\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Utilities}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} 
+		\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Exterior1st}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} 
+		\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Exterior2nd}\PY{l+s+s1}{\PYZsq{}}
+	       \PY{p}{]}
+	
+\PY{k}{for} \PY{n}{col\PYZus{}name} \PY{o+ow}{in} \PY{n}{fill\PYZus{}mf\PYZus{}cols}\PY{p}{:}
+	\PY{n}{df\PYZus{}train}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{p}{]} \PY{o}{=} \PY{n}{df\PYZus{}train}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{p}{]}\PY{o}{.}\PY{n}{fillna}\PY{p}{(}\PY{n}{df\PYZus{}train}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{index}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+	\PY{n}{df\PYZus{}test}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{p}{]} \PY{o}{=} \PY{n}{df\PYZus{}test}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{p}{]}\PY{o}{.}\PY{n}{fillna}\PY{p}{(}\PY{n}{df\PYZus{}test}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{index}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox} 
  
 
 \subsection{Feature Selection}
 Some of the variables were numerical and could directly serve as features.
 
-Now we had to find a way to also include the other columns.
+Now we had to find a way to also include the other columns. By going over all of the columns we seperated categorical data from data that could be deemed ordinal.
+As an example:
 
-We decided to go over all of the columns to determine what .
-We seperated categorical data from data that could be deemed ordinal.
+\begin{itemize}
+	\item Columns like \PY{l+s+s1}{KitchenQual} consist of abbreviations for 'Excellent', 'Good', 'Typical/Average', 'Fair' and 'Poor'. It's self evident that these values have a certain order to them.
+	\item Also columns like \PY{l+s+s1}{Street} could be deemed ordinal, since a 'Paved' road is definitely better than a 'Gravel' road.
+	\item Columns like \PY{l+s+s1}{HouseStyle} are categorical, because no objective order can be put on it.
+\end{itemize}
 
-The ordinal data could be encoded using the scikit learn OrdinalEncoder.
-Why we considered ordinal:
-LotShape: Reg > IR1 > IR2 > IR3
+The ordinal data could be encoded using the scikit learn OrdinalEncoder. 
+
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{ordinal\PYZus{}encoder}\PY{p}{(}\PY{n}{col\PYZus{}name}\PY{p}{,} \PY{n}{var\PYZus{}list}\PY{p}{)}\PY{p}{:}
+\PY{n}{dictionary} \PY{o}{=} \PY{p}{[}\PY{p}{\PYZob{}}
+	\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{col}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{col\PYZus{}name}\PY{p}{,}
+	\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mapping}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{var\PYZus{}list}\PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{p}{]}
+\PY{k}{return} \PY{n}{OrdinalEncoder}\PY{p}{(}\PY{n}{mapping} \PY{o}{=} \PY{n}{dictionary}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+An example of what the mapping of such data looks like:
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{l+s+s1}{col\PYZus{}name}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ExterQual}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mapping}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Ex}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{5}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Gd}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{4}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{TA}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{3}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Fa}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{2}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Po}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+m+mi}{1}\PY{p}{\PYZcb{}}
+\end{Verbatim}
+\end{tcolorbox}
 
 The categorical data is not fit for this same approach. Instead, we had to one hot encode them.
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{one\PYZus{}hot\PYZus{}encoder}\PY{p}{(}\PY{n}{col\PYZus{}name}\PY{p}{)}\PY{p}{:}
+	\PY{k}{return} \PY{n}{OneHotEncoder}\PY{p}{(}\PY{n}{cols}\PY{o}{=}\PY{n}{col\PYZus{}name}\PY{p}{,} \PY{n}{use\PYZus{}cat\PYZus{}names} \PY{o}{=} \PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
 
+\clearpage
 \subsection{Regression with auto-sklearn}
+Regression models can be built with the AutoSklearnRegressor:
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{autosklearn}\PY{n+nn}{.}\PY{n+nn}{regression}
+
+\PY{n}{model} \PY{o}{=} \PY{n}{autosklearn}\PY{o}{.}\PY{n}{regression}\PY{o}{.}\PY{n}{AutoSklearnRegressor}\PY{p}{(}
+	\PY{n}{per\PYZus{}run\PYZus{}time\PYZus{}limit}\PY{o}{=}\PY{l+m+mi}{30}\PY{p}{,}
+	\PY{n}{time\PYZus{}left\PYZus{}for\PYZus{}this\PYZus{}task}\PY{o}{=}\PY{l+m+mi}{120}\PY{p}{,}
+\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{model}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
 
 \subsection{Making predictions}
+As a first quick trial we made a model using only the columns that where numerical in the original dataset. This didn't give us very good predictions. A Root Mean Squared Logarithmic Error of 0.20232 placed us at only 4500 of the roughly 5000 contestants. This wasn't very surprising, but it was a bit disappointing given that we had better luck with this in the other contests.
 
-\subsection{Experimentation}
-more or less features => binarizer/onehotencoder
+We tried to improve the model by adding the ordinal and categorical data (as described above) and filling up missing data. We managed to improve our model to a score of 0.14876, putting us at place 2999.
+
+Finally, we decided to fiddle around with the time parameters of the AutoSklearnRegressor. This brought us to a final score of 0.14101, placing us at the upper half of the leaderboard (place 2335).
+
 
 \end{document}

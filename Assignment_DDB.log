@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (MiKTeX 21.10) (preloaded format=xelatex 2021.12.5)  11 DEC 2021 19:53
+This is XeTeX, Version 3.141592653-2.6-0.999993 (MiKTeX 21.10) (preloaded format=xelatex 2021.12.5)  12 DEC 2021 15:50
 entering extended mode
 **./Assignment_DDB.tex
 (Assignment_DDB.tex
@@ -984,30 +984,34 @@ File: img/pizzas.png Graphic file (type bmp)
  [8
 
 ] [9] [10]
-Underfull \hbox (badness 10000) in paragraph at lines 746--747
-[]\TU/lmr/m/n/12 Consider features []requester_upvotes_plus_downvotes[][][][] a
-nd [][][][]re-
+Underfull \hbox (badness 10000) in paragraph at lines 743--744
+[]\TU/lmr/m/n/12 Consider features []requester_upvotes_plus_downvotes[] and []r
+e-
  []
 
-[11] [12] [13
+[11] [12
 
-] [14
+] [13
 
 ]
-Underfull \vbox (badness 1337) has occurred while \output is active []
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [15]
-[16] (Assignment_DDB.aux)
+ [14
+
+]
+[15] [16] [17
+
+] (Assignment_DDB.aux)
 Package rerunfilecheck Info: File `Assignment_DDB.out' has not changed.
-(rerunfilecheck)             Checksum: EB099106492AC02973BCF657F23A7EEC;4377.
+(rerunfilecheck)             Checksum: 3EB7A45E7E45CB7C8B804183C2844241;4001.
  ) 
 Here is how much of TeX's memory you used:
- 27059 strings out of 411059
- 538388 string characters out of 2830150
- 1045296 words of memory out of 3000000
- 47290 multiletter control sequences out of 15000+600000
+ 27066 strings out of 411059
+ 538489 string characters out of 2830150
+ 1054855 words of memory out of 3000000
+ 47297 multiletter control sequences out of 15000+600000
  413075 words of font info for 85 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 99i,8n,104p,725b,625s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 99i,8n,104p,724b,625s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on Assignment_DDB.xdv (17 pages, 282700 bytes).
+Output written on Assignment_DDB.xdv (18 pages, 321940 bytes).
